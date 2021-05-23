@@ -36,7 +36,8 @@ You can specify path to dataset file by passing this path as argument, for examp
 
 	get_iris("data\\iris.data")
 
-Defaul value of path resources\\data\\iris\\iris.data.
+Defaul value of path 
+> resources\\data\\iris\\iris.data.
 
 	iris = get_iris()
 
