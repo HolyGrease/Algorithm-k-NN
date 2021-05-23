@@ -5,8 +5,6 @@ from itertools import groupby
 from dataset import Dataset
 
 # TODO some check of arguments
-# TODO check distance_weight for None, and fill it by 1 in this case
-# then delete this check from distance
 def k_NN(dataset, k, x, metric, attributes_weight=None, distance_weight=None):
 	"""Method clasify row
 
@@ -20,10 +18,26 @@ def k_NN(dataset, k, x, metric, attributes_weight=None, distance_weight=None):
 
 	Returns:
 		object: 				class. Type depends on target value type
-		None: 					if no neighbors or k is incorrect
+		None: 					if k is incorrect
 	"""
+	# Check k
 	if (k < 1):
-			return None
+		return None
+	# If attributes weight not specify
+	if attributes_weight is None:
+		# Fill by 1, don't count target attribute
+		attributes_weight = [1 for i in range(dataset.get_columns_number() - 1)]
+	# If attributes_weight specify - check for same dimension
+	# don't count target attribute
+	elif len(attributes_weight) != len(dataset.get_columns_number() - 1):
+		return None
+	# If distance weight not specify
+	if distance_weight is None:
+		# Fill by 1
+		distance_weight = [1 for i in range(k)]
+	# If distance weight specify - check number of weights to equal to k
+	elif len(distance_weight) != k:
+		return None
 	# Count distance between two dots
 	output = []
 	for index, row in enumerate(dataset.data):
@@ -32,7 +46,7 @@ def k_NN(dataset, k, x, metric, attributes_weight=None, distance_weight=None):
 		# Delete target element
 		value.pop(dataset.target)
 		# Calculate distance
-		output.append((distance(x, value, distance_weight, metric), index))
+		output.append((distance(x, value, attributes_weight, metric), index))
 	# Sort by distance descending
 	output.sort()
 	# Get first k elements
@@ -41,14 +55,8 @@ def k_NN(dataset, k, x, metric, attributes_weight=None, distance_weight=None):
 	classes = map(lambda x: dataset.data[x[1]][dataset.target], neighbours)
 	# Count number of instances in each class
 	frequency = [(len([i for i in value]), key) for key, value in groupby(sorted(classes), None)]
-	# If attributes coefficients are None
-	if attributes_weight == None:
-		attributes_weight = [1 for i in range(len(frequency))]
-	# Check for same length (dimension)
-	if len(attributes_weight) != len(frequency):
-		return None
 	# Voting
-	voting = [frequency[i] * attributes_weight[i] for i in range(len(frequency))]
+	voting = [frequency[i] * distance_weight[i] for i in range(len(frequency))]
 	# Get class
 	cl = sorted(voting)[-1]
 	# Return class
@@ -56,13 +64,12 @@ def k_NN(dataset, k, x, metric, attributes_weight=None, distance_weight=None):
 
 def distance(x, y, weight, metric):
 	# If weight not specified
-	if weight == None:
+	if weight is None:
 		weight = [1 for i in range(len(x))]
-
 	# Check coordinates for same length (dimension)
 	if len(x) != len(y) or len(x) != len(weight):
 		return -1
-
+	# Calculate distance
 	return metric(x, y, weight)
 
 def euclidean(x, y, w):
