@@ -8,12 +8,12 @@ def k_NN(dataset, k, x, metric, attributes_weight=None, distance_weight=None):
 	"""Method clasify row
 
 	Args:
-		dataset: 				dataset which used to classify
-		k (int): 				number of neighbors, must be large then 0
-		x (list): 				row to be classified
-		metric (predicate): 	metric by which calculate distance
+		dataset: 			dataset which used to classify
+		k (int): 			number of neighbors, must be large then 0
+		x (list): 			row to be classified
+		metric (predicate): 		metric by which calculate distance
 		attributes_weight (list): 	weights for attributes
-		distance_weight (list): 		weights for distances
+		distance_weight (list): 	weights for distances
 
 	Returns:
 		object: 				class. Type depends on target value type
