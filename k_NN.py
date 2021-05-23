@@ -16,8 +16,8 @@ def k_NN(dataset, k, x, metric, attributes_weight=None, distance_weight=None):
 		distance_weight (list): 	weights for distances
 
 	Returns:
-		object: 				class. Type depends on target value type
-		None: 					if k is incorrect
+		object: 			class. Type depends on target value type
+		None: 				if k is incorrect
 	"""
 	# Check k
 	if (k < 1):
