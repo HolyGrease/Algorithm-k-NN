@@ -1,5 +1,6 @@
 import random
 import csv
+import math
 
 from itertools import groupby
 
@@ -218,3 +219,76 @@ class Dataset():
 		for row in self._data:
 			# Calculate new value
 			row[column_index] = (row[column_index] - minimum) / (maximum - minimum)
+
+	@staticmethod
+	def entropy(column):
+		"""Method calculate column entropy
+		
+		Args:
+			column (List): list of values
+
+		Returns:
+			float: entropy of column. In the range [0, 1]
+			None: if column is None
+		"""
+		# If column is None
+		if column == None:
+			# Return None
+			return None
+		# Group column by identity
+		grouped = groupby(sorted(column))
+		# Count rows number
+		rows_number = len(column)
+		# Count number of clases
+		n = len(set(column))
+		# If have only one class, in this case entropy equals 0
+		if n == 1:
+			# Return 0
+			return 0
+		# Calculate entropy
+		output = 0
+		# For each group
+		for _, value in grouped:
+			# Get list of values
+			v = list(value)
+			# Calculate
+			output -= len(v) / rows_number * math.log(len(v)/rows_number, n)
+		# Return entropy
+		return output
+
+	@staticmethod
+	def gain(column, target_column, predicate=None):
+		"""Method calculates gain of specific column
+
+		Args:
+			index (int): index of column
+			predicate (function(x, y)): function that takes two arguments,
+				used to group column
+
+		Return:
+			float: gain of column
+			None: if index is wrong
+		"""
+		# Concat column and target column
+		pairs = zip(column, target_column)
+		# If predicate doesn't specified
+		if predicate == None:
+			unpacking_predicate = lambda x: x[0]
+		# Otherwise
+		else:
+			# Unpacking predicate
+			unpacking_predicate = lambda x: predicate(*x)
+		# Group by predicate
+		grouped = groupby(sorted(pairs, key=unpacking_predicate), unpacking_predicate)
+		# Count row number
+		rows_number = len(column)
+		# Count entropy of target column
+		output = Dataset.entropy(target_column)
+		# For each group
+		for _, value in grouped:
+			# Get list of values
+			v = list(value)
+			# Calculate
+			output -= len(v) / rows_number * Dataset.entropy(v)
+		# Return entropy
+		return output

@@ -5,21 +5,14 @@ from k_NN import euclidean
 def main():
 	# Load dataset
 	iris = Dataset.get_iris()
-
+	# Print first 10 rows
 	iris.print(10)
 	# Shuffle dataset
 	iris = iris.shuffle()
 	# Split dataset on train and test
-	# train dataset get 0.8 ratio of original dataset
+	# train dataset include 80% of original dataset
 	train, test = iris.split_by_ratio(0.8)
 	# Variable to count correct predictions
-
-	assert_class = test.data[0].pop(test.target)
-	instance_to_classify = [4.8, 3.1, 1.6, 0.2]
-	predicted_class = k_NN(train, 3, instance_to_classify, euclidean)
-	print(f"{assert_class} ?= {predicted_class}")
-
-
 	correct = 0
 	for row in test.data:
 		# Get correct value

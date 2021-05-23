@@ -20,7 +20,7 @@ Thirdly, set columns (attributes) names:
 		"Class"]
 
 Now we can create Dataset object. Arguments:
-- data - basicly list of list
+- data - just list of list
 - target index - index of target attribute, attribute that contains classes values
 - column or attributes names - list of attributes names
 - name - Dataset name
@@ -36,17 +36,17 @@ You can specify path to dataset file by passing this path as argument, for examp
 
 	get_iris("data\\iris.data")
 
-Defaul value of path 
+Default value of path 
 > resources\\data\\iris\\iris.data.
 
 	iris = get_iris()
 
-# Prepocessing dataset
+# Preprocessing dataset
 Shuffle dataset:
 
 	iris = iris.shuffle()
 
-Split dataset on train and test, as argument passing ratio. Train dataset gets ratio of original dataset, test - other:
+Split dataset on "train" and "test", as argument passing ratio. Train dataset gets 80% of original dataset, test - other:
 
 	train, test = iris.split_by_ration(0.8)
 
@@ -74,7 +74,33 @@ Remember you need to delete target attribute from instance that you classify
 In terminal you can see something like this
 > Iris-setosa ?= Iris-setosa
 ### Attribute weight classification
+Attribute weights are used with calculating distances. This weights determine how specific attribute influece on general distance.
+In this case you need to define weights. For example like this:
+
+	attributes_weights = [0.1, 0.5, 0.6, 0.3]
+
+Number of weights must be equal number of attributes - 1 (except target attribute)
+Also you can use build in Dataset method called [inforamtion gain](https://machinelearningmastery.com/information-gain-and-mutual-information/#:~:text=Information%20gain%20is%20the%20reduction,before%20and%20after%20a%20transformation.) to get data based weights. Example:
+
+	attributes_weights = [
+		Dataset.gain(
+			train.get_column(i),
+			train.get_target_column())
+		for i in range(4)]
+
+To use this weights in classification you need pass one more argument:
+
+	predicted_class = k_NN(train, 3, row, euclidean, attributes_weights=attributes_weights)
 
 ### Distance weight classification
+In this case you need to define weights. For example like this:
 
+	distances_weights = [0.1, 0.5, 0.6, 0.3]
+
+To use this weights in classification you need pass one more argument:
+
+	predicted_class = k_NN(train, 3, row, euclidean, distances_weights)
 ### Combine weight classification
+Also you can combine both, attribute and distance weights, in this algorithm.
+
+	predicted_class = k_NN(train, 3, row, euclidean, distances_weights, attributes_weights)

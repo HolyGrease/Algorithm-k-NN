@@ -4,31 +4,31 @@ from itertools import groupby
 
 from dataset import Dataset
 
-def k_NN(dataset, k, x, metric, attributes_weight=None, distance_weight=None):
+def k_NN(dataset, k, x, metric, attributes_weights=None, distance_weight=None):
 	"""Method clasify row
 
 	Args:
-		dataset: 			dataset which used to classify
-		k (int): 			number of neighbors, must be large then 0
-		x (list): 			row to be classified
+		dataset: 					dataset which used to classify
+		k (int): 					number of neighbors, must be large then 0
+		x (list): 					row to be classified
 		metric (predicate): 		metric by which calculate distance
-		attributes_weight (list): 	weights for attributes
+		attributes_weights (list): 	weights for attributes
 		distance_weight (list): 	weights for distances
 
 	Returns:
-		object: 			class. Type depends on target value type
-		None: 				if k is incorrect
+		object: 					class. Type depends on target value type
+		None: 						if k is incorrect
 	"""
 	# Check k
 	if (k < 1):
 		return None
 	# If attributes weight not specify
-	if attributes_weight is None:
+	if attributes_weights is None:
 		# Fill by 1, don't count target attribute
-		attributes_weight = [1 for i in range(dataset.get_columns_number() - 1)]
-	# If attributes_weight specify - check for same dimension
+		attributes_weights = [1 for i in range(dataset.get_columns_number() - 1)]
+	# If attributes_weights specify - check for same dimension
 	# don't count target attribute
-	elif len(attributes_weight) != len(dataset.get_columns_number() - 1):
+	elif len(attributes_weights) != len(dataset.get_columns_number() - 1):
 		return None
 	# If distance weight not specify
 	if distance_weight is None:
@@ -45,7 +45,7 @@ def k_NN(dataset, k, x, metric, attributes_weight=None, distance_weight=None):
 		# Delete target element
 		value.pop(dataset.target)
 		# Calculate distance
-		output.append((distance(x, value, attributes_weight, metric), index))
+		output.append((distance(x, value, attributes_weights, metric), index))
 	# Sort by distance descending
 	output.sort()
 	# Get first k elements
@@ -79,9 +79,6 @@ def euclidean(x, y, w):
 
 # TODO implement other metrics
 
-def minkowsky(x, y, w):
-	return 0
-
 def manhattan(x, y, w):
 	return 0
 
@@ -89,10 +86,4 @@ def camberra(x, y, w):
 	return 0
 
 def chebychev(x, y, w):
-	return 0
-
-def correlation(x, y, w):
-	return 0
-
-def kendalls(x, y, w):
-	return 0
+	return 0 
