@@ -4,7 +4,6 @@ from itertools import groupby
 
 from dataset import Dataset
 
-# TODO some check of arguments
 def k_NN(dataset, k, x, metric, attributes_weight=None, distance_weight=None):
 	"""Method clasify row
 
