@@ -6,18 +6,27 @@ from itertools import groupby
 
 
 class Dataset():
-	# TODO check for arguments
-	def __init__(self, data, target_index, column_names, name):
+	def __init__(self, data, target_index, columns_names, name):
 		"""Method create Dataset item
 
 		Args:
 			data (list): 			list of table rows
 			target_index (int): 	index of column with target attribute
-			column_names (list): 	list with columns names
+			columns_names (list): 	list with columns names
 		"""
+		# Check data
+		if data in None:
+			raise ValueError("Data in None!")
 		self._data = data
+		# Check target_index for valid index
+		if target_index >= self.get_columns_number():
+			raise ValueError(f"Target index out of range! Got {target_index}, columns number: {self.get_columns_number()}")
 		self._target_index = target_index
-		self.column_names = column_names
+		# Check is number of columns names same as columns in data
+		# If not raise exception
+		if len(columns_names) != self.get_columns_number():
+			raise ValueError(f"Wrong columns names number! Got {len(columns_names)}, columns number: {self.get_columns_number()}")
+		self._columns_names = columns_names
 		self._name = name
 
 	@staticmethod
@@ -75,9 +84,9 @@ class Dataset():
 		# Print dataset name
 		print(f"Name = {self._name}")
 		# Print name of target attributes
-		print(f"Target = {self.column_names[self._target_index]}")
-		# Print column column_names
-		for name in self.column_names:
+		print(f"Target = {self._columns_names[self._target_index]}")
+		# Print column columns_names
+		for name in self._columns_names:
 			# Center align of text
 			print("{:^15}".format(name), end=" | ")
 		# Go to new line
@@ -187,8 +196,8 @@ class Dataset():
 			self._data[i].copy()
 			for i in range(TRAIN_DATASET_LEN, self.get_rows_number())]
 		# Create two datasets and return them
-		return (Dataset(first, self._target_index, self.column_names, self._name),
-			Dataset(second, self._target_index, self.column_names, self._name))
+		return (Dataset(first, self._target_index, self._columns_names, self._name),
+			Dataset(second, self._target_index, self._columns_names, self._name))
 
 	def shuffle(self):
 		"""Method shuffle rows in dataset
@@ -201,7 +210,7 @@ class Dataset():
 		# Shuffle data
 		random.shuffle(data)
 		# Create new dataset on shuffled data
-		return Dataset(data, self._target_index, self.column_names, self._name)
+		return Dataset(data, self._target_index, self._columns_names, self._name)
 
 	# TODO different variants of normalization
 	# for date type and etc.
