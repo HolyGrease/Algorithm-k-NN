@@ -44,6 +44,7 @@ class Dataset():
 		"""
 		# If path not specify
 		if path is None:
+			# TODO pathlib
 			path = "resources\\data\\iris\\iris.data"
 
 		# Open file as csv
