@@ -15,7 +15,7 @@ class Dataset():
 			columns_names (list): 	list with columns names
 		"""
 		# Check data
-		if data in None:
+		if data is None:
 			raise ValueError("Data in None!")
 		self._data = data
 		# Check target_index for valid index
