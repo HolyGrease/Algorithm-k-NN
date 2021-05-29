@@ -62,6 +62,16 @@ def k_NN(dataset, k, x, metric, attributes_weights=None, distance_weight=None):
 	return cl[1]
 
 def distance(x, y, weight, metric):
+	"""Function calculate distance between two dots
+		using specific metric and weights for each dimension
+
+	Args:
+		x (list): first dot
+		y (list): second dot
+		weight (list): weights determine how specific dimension
+			influence on general distance
+		metric (predicate): metric that used to calculate distance
+	"""
 	# If weight not specified
 	if weight is None:
 		weight = [1 for i in range(len(x))]
@@ -72,18 +82,52 @@ def distance(x, y, weight, metric):
 	return metric(x, y, weight)
 
 def euclidean(x, y, w):
+	"""Function calculate Euclidean distance
+
+	Args:
+		x (list): first dot
+		y (list): second dot
+		w (list): weights determine how specific dimension
+	"""
 	return math.sqrt(sum(
-		math.pow(x[i] - y[i], 2) 
+		math.pow(x[i] - y[i], 2) * w[i]
 		for i in range(len(x))
 	))
 
 # TODO implement other metrics
 
 def manhattan(x, y, w):
-	return 0
+	"""Function calculate Manhattan distance
+
+	Args:
+		x (list): first dot
+		y (list): second dot
+		w (list): weights determine how specific dimension
+	"""
+	return sum(
+		math.fabs(x[i] - y[i]) * w[i]
+		for i in range(lex(x)))
 
 def camberra(x, y, w):
-	return 0
+	"""Function calculate Camberra distance
+
+	Args:
+		x (list): first dot
+		y (list): second dot
+		w (list): weights determine how specific dimension
+	"""
+	return sum(
+		math.fabs((x[i] - y[i]) / (x[i] + y[i])) * w[i]
+		for i in range(lex(x)))
 
 def chebychev(x, y, w):
-	return 0 
+	"""Function calculate Chebychev distance
+
+	Args:
+		x (list): first dot
+		y (list): second dot
+		w (list): weights determine how specific dimension
+	"""
+	return max(
+		math.fabs(x[i] - y[i]) * w[i]
+		for i in range(lex(x)))
