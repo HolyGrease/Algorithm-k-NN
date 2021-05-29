@@ -29,6 +29,7 @@ class Dataset():
 		self._columns_names = columns_names
 		self._name = name
 
+	# TODO pathlib
 	@staticmethod
 	def get_iris(path=None):
 		"""Method return iris dataset
@@ -44,7 +45,6 @@ class Dataset():
 		"""
 		# If path not specify
 		if path is None:
-			# TODO pathlib
 			path = "resources\\data\\iris\\iris.data"
 
 		# Open file as csv
@@ -72,6 +72,39 @@ class Dataset():
 		# return Dataset
 		return dataset
 
+	# TODO pathlib
+	@staticmethod
+	def get_tennis(path=None):
+		"""Method return tennis dataset
+			by default dataset must be available
+			by path "resources\\data\\tennis\\tennis.data"
+			link to dataset "http://archive.ics.uci.edu/ml/datasets/Iris/"
+
+		Args:
+			path (string): Path to file with data
+
+		Returns:
+			Dataset: Dataset object based on tennis data set
+		"""
+		# If path not specify
+		if path is None:
+			path = "resources\\data\\tennis\\tennis.data"
+
+		# Open file as csv
+		csv_reader = csv.reader(open(path), delimiter=",")
+		# Save data to list
+		data = [row for row in csv_reader]
+
+		# Set attributes names
+		names = [
+			"Outlook", "Temperature",
+			"Humidity", "Wind",
+			"PlayTennis"]
+		# Create Dataset
+		dataset = Dataset(data, 4, names, "Tennis")
+		# return Dataset
+		return dataset
+
 	def print(self, rows_number=None):
 		"""Method prints the dataset in console
 
@@ -93,7 +126,7 @@ class Dataset():
 		# Go to new line
 		print()
 		# Print data as table
-		for i in range(rows_number):
+		for i in range(min([rows_number, self.get_rows_number()])):
 			for attribute in self.data[i]:
 				# Center align of text
 				print("{:^15}".format(attribute), end=" | ")
@@ -109,9 +142,11 @@ class Dataset():
 		return self._target_index
 
 	@target.setter
-	def target(self, new_index):
-		if new_index < get_columns_number and new_index >= 0:
-			self._target_index = new_index
+	def target(self, new_target_index):
+		# If index is valid
+		if self.is_column_index_correct(new_target_index):
+			# Set new value
+			self._target_index = new_target_index
 
 	@property
 	def name(self):
@@ -120,6 +155,23 @@ class Dataset():
 	@name.setter
 	def name(self, new_name):
 		self._name = new_name
+
+	def is_column_index_correct(self, column_index):
+		"""Method check is column_index is valid
+
+		Args:
+			column_index (int): index to check
+
+		Retuns:
+			false: index is invalid
+			true: index is valid
+		"""
+		# Check is index valid
+		if column_index > self.get_columns_number() or column_index < 0:
+			# If not valid return false
+			return False
+		# Index is valid return true
+		return True
 
 	def get_row(self, index):
 		"""Method return row by index
@@ -137,7 +189,7 @@ class Dataset():
 		# Return copy of the row
 		return data[index].copy()
 
-	def get_column(self, index):
+	def get_column(self, column_index):
 		"""Method returns values of required column
 
 		Args:
@@ -147,11 +199,11 @@ class Dataset():
 			list: values from requested column
 			None: if index is incorrect
 		"""
-		# Check is index valid
-		if index > self.get_columns_number() or index < 0:
+		# Check is index invalid
+		if not self.is_column_index_correct(column_index):
 			return None
 		# Return column
-		return [row[index] for row in self._data]
+		return [row[column_index] for row in self._data]
 
 	def get_target_column(self):
 		"""Method returns list of values from column with target attributes
@@ -159,6 +211,7 @@ class Dataset():
 		Returns:
 			list: values from target attributes
 		"""
+		# Return target column
 		return self.get_column(self._target_index)
 
 	def get_rows_number(self):
@@ -176,6 +229,81 @@ class Dataset():
 			int: number of columns
 		"""
 		return len(self._data[0])
+
+	def get_name(self, column_index):
+		"""Method return column name
+
+		Args:
+			column_index (int): index of column to get name from
+
+		Returns:
+			string: name of specific column
+			None: if column_index is incorrect
+		"""
+		# Check is index invalid
+		if not self.is_column_index_correct(column_index):
+			return None
+		# Return column name
+		return self._columns_names[column_index]
+
+	def remove_column(self, column_index):
+		"""Method remove specific column from dataset
+
+		Args:
+			column_indes (int): index of column to remove
+
+		Returns:
+			None: if column_index is incorrect
+				or if try to remove target column
+		"""
+		# Check is index invalid
+		if not self.is_column_index_correct(column_index):
+			return None
+		# Check to remove not target column
+		if column_index == self.target:
+			return None
+		# Move target column
+		if column_index < self.target:
+			self.target -= 1
+		# Delete column name
+		self._columns_names.pop(column_index)
+		# In each row remove specific attribute
+		for row in self._data:
+			row.pop(column_index)
+
+	def split_by_predicate(self, column_index, predicate):
+		"""Method split dataset by specific column and predicate
+
+		Args:
+			column_index (int): index of column by which split
+			predicate (predicate): function by which split
+				takes two arguments (row (list), column_index (int))
+
+		Returns:
+			(list, list): first list is list of datasets, second list values of column by which split
+			None: if column_index is incorrect
+		"""
+		# Check is index invalid
+		if not self.is_column_index_correct(column_index):
+			return None
+		# Unpacking predicate
+		unpacking_predicate = lambda row: predicate(row, column_index)
+		# Group data using this predicate
+		datas = groupby(sorted(self.data, key=unpacking_predicate), key=unpacking_predicate)
+		# Separate grouped datas on key value and data
+		splitted_data = []
+		keys = []
+		for key, value in datas:
+			# Save keys values
+			keys.append(key)
+			# Convert to list
+			splitted_data.append(list(value))
+		# Convert data to Datasets objects
+		datasets = [
+			Dataset(splitted_data[i], self._target_index, self._columns_names.copy(), self._name) 
+			for i in range(len(splitted_data))]
+		# Return datasets and key values
+		return datasets, keys
 
 	def split_by_ratio(self, ratio):
 		"""Method split dataset into training and test parts with given ratio
@@ -220,7 +348,13 @@ class Dataset():
 
 		Args:
 			column_index (int): index of column to normalize
+
+		Returns:
+			None: if column_index is incorrect
 		"""
+		# Check is index invalid
+		if not self.is_column_index_correct(column_index):
+			return None
 		# Find minimum value in column
 		minimum = min(self.get_column(column_index))
 		# Find maximum value in column
@@ -229,6 +363,108 @@ class Dataset():
 		for row in self._data:
 			# Calculate new value
 			row[column_index] = (row[column_index] - minimum) / (maximum - minimum)
+
+	def threshold(self, column_index, method=None):
+		"""Method thresholds specific column by specific method
+			thresholds means change values to 0 and 1
+			according to threshold value
+			0 - less then threshold value
+			1 - otherwise
+
+		Args:
+			column_index (int): index of column to threshold
+			method (string): method which used to find threshold value
+				can ve "median" or "gain"
+
+		Returns:
+			threshold (float): value by which thresholds
+			None: if column_index is incorrect
+		"""
+		# Check is index invalid
+		if not self.is_column_index_correct(column_index):
+			return None
+		threshold = None
+		# Finding threshold acording to the method
+		if method is None or method == "median":
+			threshold = self._find_threshold_median(column_index)
+		elif method == "gain":
+			threshold = self._find_threshold_gain(column_index)
+		# If got unknown method
+		else:
+			return None
+		# Use treshold to change column values
+		for row in self._data:
+			if row[column_index] < threshold:
+				row[column_index] = 0
+			else:
+				row[column_index] = 1
+		# Return threshold value
+		return threshold
+
+	def _find_threshold_median(self, column_index):
+		"""Method return median value of the specific column
+
+		Args:
+			column_index (int): index of column to find median
+
+		Returns:
+			median (float): median value of column
+			None: if column_index is incorrect
+		"""
+		# Check is index invalid
+		if not self.is_column_index_correct(column_index):
+			return None
+		# Get column
+		column = self.get_column(column_index)
+		# Sort
+		column.sort()
+		# Find median index
+		med = int(self.get_rows_number() / 2)
+		# Return median value
+		return column[med]
+
+	def _find_threshold_gain(self, column_index):
+		"""Method return threshold of column
+			find using information gain
+
+		Args:
+			column_index (int): index of column to find threshold
+
+		Returns:
+			threshold (float): threshold value of column
+			None: if column_index is incorrect
+		"""
+		# Check is index invalid
+		if not self.is_column_index_correct(column_index):
+			return None
+		column = self.get_column(column_index)
+		target = self.get_target_column()
+		# Concat column and target column
+		# Convert to list of turples
+		pairs = list(zip(column, target))
+		# Sort pairs
+		pairs.sort()
+		# Find thresholds
+		thresholds = [
+			# Find average
+			(pairs[i - 1][0] + pairs[i][0]) / 2
+			# For each element in pairs, starting from second
+			for i in range(1, len(column))
+			# If target value changed
+			if pairs[i - 1][1] != pairs[i][1]]
+		# Remove duplicates
+		thresholds = list(set(thresholds))
+		# Calculate gain for each threshold
+		gains = [
+			Dataset.gain(
+				self.get_column(column_index),
+				self.get_target_column(),
+				lambda x, y: x < threshold)
+			for threshold in thresholds]
+		# Find index of max gain
+		index = gains.index(max(gains))
+		# Return thresholds with max gain
+		return thresholds[index]
 
 	@staticmethod
 	def entropy(column):
