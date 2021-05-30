@@ -90,7 +90,7 @@ Also you can use build in Dataset method called [inforamtion gain](https://machi
 
 To use this weights in classification you need pass one more argument:
 
-	predicted_class = k_NN(train, 3, row, euclidean, attributes_weights=attributes_weights)
+	predicted_class = k_NN(train, row, 3, euclidean, attributes_weights=attributes_weights)
 
 ### Distance weight classification
 In this case you need to define weights. For example like this:
