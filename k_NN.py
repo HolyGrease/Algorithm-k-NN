@@ -4,13 +4,13 @@ from itertools import groupby
 
 from dataset import Dataset
 
-def k_NN(dataset, k, x, metric, attributes_weights=None, distance_weight=None):
+def k_NN(dataset, x, k, metric, attributes_weights=None, distance_weight=None):
 	"""Method clasify row
 
 	Args:
 		dataset: 					dataset which used to classify
-		k (int): 					number of neighbors, must be large then 0
 		x (list): 					row to be classified
+		k (int): 					number of neighbors, must be large then 0
 		metric (predicate): 		metric by which calculate distance
 		attributes_weights (list): 	weights for attributes
 		distance_weight (list): 	weights for distances

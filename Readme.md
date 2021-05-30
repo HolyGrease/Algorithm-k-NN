@@ -68,7 +68,7 @@ Remember you need to delete target attribute from instance that you classify
 
 	assert_class = test.data[0].pop(test.target)
 	instance_to_classify = [4.8, 3.1, 1.6, 0.2]
-	predicted_class = k_NN(train, 3, instance_to_classify, euclidean)
+	predicted_class = k_NN(train, instance_to_classify, 3, euclidean)
 	print(f"{assert_class} ?= {predicted_class}")
 
 In terminal you can see something like this
@@ -99,8 +99,8 @@ In this case you need to define weights. For example like this:
 
 To use this weights in classification you need pass one more argument:
 
-	predicted_class = k_NN(train, 3, row, euclidean, distances_weights)
+	predicted_class = k_NN(train, row, 3, euclidean, distances_weights)
 ### Combine weight classification
 Also you can combine both, attribute and distance weights, in this algorithm.
 
-	predicted_class = k_NN(train, 3, row, euclidean, distances_weights, attributes_weights)
+	predicted_class = k_NN(train, row, 3, euclidean, distances_weights, attributes_weights)

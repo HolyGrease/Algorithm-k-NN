@@ -18,7 +18,7 @@ def main():
 		# Get correct value
 		assert_value = row.pop(test.target)
 		# Make prediction
-		predicted_class = k_NN(train, 3, row, euclidean)
+		predicted_class = k_NN(train, row, 3, euclidean)
 		# If prediction is correct
 		if predicted_class == assert_value:
 			correct += 1
