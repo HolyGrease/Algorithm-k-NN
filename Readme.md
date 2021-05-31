@@ -63,9 +63,9 @@ For basic classification use k_NN() function with only 4 arguments:
 - row - instance to classify, must contains all attributes except target
 - metric - metric used to calculate distance. k_NN.py file contains some metric, use one of them or implement yours.
 <a/>
-k_NN method return class according to train dataset
+k_NN method return class according to train dataset.
 
-Remember you need to delete target attribute from instance that you classify
+Remember you need to delete target attribute from instance that you classify.
 
 	assert_class = test.data[0].pop(test.target)
 	instance_to_classify = [4.8, 3.1, 1.6, 0.2]
