@@ -24,7 +24,7 @@ Now we can create Dataset object. Arguments:
 - target index - index of target attribute, attribute that contains classes values
 - column or attributes names - list of attributes names
 - name - Dataset name
-
+<a/>
 
 	iris = Dataset(data, 4, column_names, "Iris")
 
@@ -62,6 +62,7 @@ For basic classification use k_NN() function with only 4 arguments:
 - k - integer, number of neighbours that will be used to predict class
 - row - instance to classify, must contains all attributes except target
 - metric - metric used to calculate distance. k_NN.py file contains some metric, use one of them or implement yours.
+<a/>
 k_NN method return class according to train dataset
 
 Remember you need to delete target attribute from instance that you classify
